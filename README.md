@@ -1,119 +1,159 @@
- # 🚀 CI/CD Pipeline using Jenkins, SonarQube, Docker & AWS
+# 🚀 CI/CD Pipeline using Jenkins, SonarQube, Docker & AWS EC2
 
 ## 📌 Overview
 
-This project demonstrates a complete CI/CD pipeline for a sample web application using:
+This project demonstrates a complete CI/CD pipeline where a sample web application is:
 
-- GitHub for source code management
-- Jenkins for continuous integration
-- SonarQube for code quality analysis
-- Docker for containerization
-- AWS EC2 for deployment
+- Pushed to GitHub
+- Pulled and built by Jenkins
+- Analyzed using SonarQube
+- Deployed using Docker
+- Hosted on AWS EC2
 
-The pipeline is automatically triggered using GitHub webhooks.
+All configurations are done using Jenkins UI (no Jenkinsfile).
 
 ---
 
-## 🧱 Architecture
+## 🧱 Architecture Flow
 
 GitHub → Jenkins → SonarQube → Docker → AWS EC2 → End User
 
 ---
 
-## ☁️ Infrastructure
+## ☁️ Infrastructure Used
 
-Three AWS EC2 instances are used:
-
-- Jenkins Server
-- SonarQube Server
-- Docker Deployment Server
+- EC2 Instance 1 → Jenkins (CI Server)
+- EC2 Instance 2 → SonarQube (Code Analysis)
+- EC2 Instance 3 → Docker (Deployment)
 
 ---
 
-## 📂 Repository Contents
+## 📂 Project Files
 
-- HTML, CSS, JavaScript files (sample website)
-- Dockerfile for containerization
-
----
-
-## ⚙️ Setup Process
-
-### 1. GitHub
-
-- Create a repository
-- Push the application code
+- index.html (sample website)
+- CSS & JS files
+- Dockerfile
 
 ---
 
-### 2. Jenkins Setup (CI Server)
+## ⚙️ Actual Implementation Flow
 
-- Install Jenkins by following the official documentation:  
-  https://www.jenkins.io/doc/book/installing/
+### Step 1: GitHub Setup
 
-- Access Jenkins via browser:  
-  `http://<JENKINS_PUBLIC_IP>:8080`
-
-- Complete initial setup:
-  - Install suggested plugins
-  - Create admin user
-
-- Create a Freestyle Project
-- Configure GitHub repository
-- Enable build trigger using GitHub webhook
+- Create repository
+- Upload project files (including Dockerfile)
 
 ---
 
-### 3. GitHub Webhook Configuration
+### Step 2: Jenkins Setup (EC2 - 1)
 
-- Go to repository → Settings → Webhooks
-- Add webhook URL:
-- 
-- This enables automatic pipeline execution on every code push
+- Install Jenkins using official documentation
+- Access Jenkins via browser (`http://<IP>:8080`)
+- Complete initial setup (plugins + admin user)
 
 ---
 
-### 4. SonarQube Setup (Code Analysis)
+### Step 3: Create Jenkins Job
 
-- Install SonarQube using official documentation:  
-  https://docs.sonarqube.org/latest/setup/install-server/
+- Create **Freestyle Project**
+- Add GitHub repository in Source Code Management
+- Save configuration
 
-- Access SonarQube via browser:  
-  `http://<SONAR_PUBLIC_IP>:9000`
+---
 
-- Generate authentication token
+### Step 4: Enable Auto Trigger (Webhook)
 
 - In Jenkins:
-  - Configure SonarQube server
-  - Add SonarScanner in build steps
+  - Enable **GitHub hook trigger for GITScm polling**
+
+- In GitHub:
+  - Add webhook:
+  - 
+👉 Now pipeline runs automatically on every push
 
 ---
 
-### 5. Docker Setup (Deployment)
+### Step 5: SonarQube Setup (EC2 - 2)
 
-- Install Docker using official documentation:  
-  https://docs.docker.com/engine/install/
-
-- Use Dockerfile from repository to build image
-
-- Configure Jenkins job to:
-  - Build Docker image
-  - Run container
-  - Deploy application
+- Install SonarQube using official documentation
+- Access via browser (`http://<IP>:9000`)
+- Login and generate **token**
 
 ---
 
-## 🔄 Pipeline Flow
+### Step 6: Connect SonarQube with Jenkins
 
-1. Developer pushes code to GitHub  
-2. GitHub webhook triggers Jenkins  
-3. Jenkins pulls latest code  
-4. SonarQube analyzes code quality  
-5. Jenkins builds Docker image  
-6. Application is deployed using Docker  
-7. End user accesses application  
+- In Jenkins → Manage Jenkins → Configure System:
+  - Add SonarQube server (URL + token)
+
+- In Jenkins job:
+  - Add **Sonar Scanner build step**
+
+👉 Now Jenkins sends code to SonarQube for analysis
+
+---
+
+### Step 7: First Pipeline Execution
+
+When you push code:
+
+1. Jenkins pulls code from GitHub  
+2. SonarQube analysis starts  
+3. Quality check runs  
+
+👉 If SonarQube is not ready → build may fail  
+👉 Once Sonar is running → build succeeds  
+
+---
+
+### Step 8: Docker Setup (EC2 - 3)
+
+- Install Docker using official documentation
+- Ensure Docker service is running
+
+---
+
+### Step 9: Add Deployment Step in Jenkins
+
+In Jenkins job:
+
+- Add **Execute Shell** build step:
+
+Actions performed:
+- Build Docker image from Dockerfile
+- Stop old container (if exists)
+- Run new container
+
+👉 This deploys the application automatically
+
+---
+
+### Step 10: Final Pipeline Flow
+
+Every GitHub push triggers:
+
+1. Jenkins pulls latest code  
+2. SonarQube analyzes code  
+3. Jenkins builds Docker image  
+4. Container is deployed  
+5. Application becomes live  
 
 ---
 
 ## 🌐 Access Application
+
+
+---
+
+## ⚠️ Real Issues Faced
+
+- SonarQube takes time to start → caused build failures
+- Jenkins stopped when system overloaded
+- Incorrect Sonar URL caused connection error
+- Webhook misconfiguration prevented auto trigger
+
+---
+
+
+
 
